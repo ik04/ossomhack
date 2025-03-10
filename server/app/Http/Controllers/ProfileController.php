@@ -18,31 +18,39 @@ class ProfileController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
+                // Profile validation
                 'profile' => 'required|array',
                 'profile.location' => 'required|string',
                 'profile.occupation' => 'required|string',
                 'profile.age' => 'required|integer',
                 
+                // Income validation
                 'incomes' => 'required|array',
                 'incomes.*.name' => 'required|string',
                 'incomes.*.amount' => 'required|numeric',
                 'incomes.*.type' => 'required|integer',
                 
+                // Expense validation
                 'expenses' => 'required|array',
                 'expenses.*.name' => 'required|string',
                 'expenses.*.amount' => 'required|numeric',
                 'expenses.*.type' => 'required|integer',
                 
-                'loans' => 'array',
-                'loans.*.principal' => 'required_with:loans|numeric',
-                'loans.*.rate_of_interest' => 'required_with:loans|numeric',
-                'loans.*.tenure' => 'required_with:loans|numeric',
+                // Loan validation
+                'loans' => 'present|array',
+                'loans.*.name' => 'required|string',
+                'loans.*.amount' => 'required|numeric',
+                'loans.*.monthly_emi' => 'required|numeric',
+                'loans.*.tenure_left' => 'required|integer',
+                'loans.*.is_paid' => 'required|boolean',
                 
-                'investments' => 'array',
-                'investments.*.principal' => 'required_with:investments|numeric',
-                'investments.*.rate_of_interest' => 'required_with:investments|numeric',
-                'investments.*.number_of_times' => 'required_with:investments|numeric',
-                'investments.*.time' => 'required_with:investments|numeric',
+                // Investment validation
+                'investments' => 'present|array',
+                'investments.*.principal' => 'required|numeric',
+                'investments.*.rate_of_interest' => 'required|numeric',
+                'investments.*.compounding_frequency' => 'required|integer|min:0|max:3',
+                'investments.*.time' => 'required|numeric',
+                'investments.*.type' => 'required|string'
             ]);
 
             if ($validator->fails()) {
@@ -55,66 +63,60 @@ class ProfileController extends Controller
 
             DB::beginTransaction();
 
-            $user = $request->user();
-            
             // Create Profile
-            $profile = Profile::create(array_merge(
-                $request->profile,
-                ['user_id' => $user->id]
-            ));
+            $profile = Profile::create([
+                ...$request->profile,
+                'user_id' => $request->user()->id
+            ]);
 
             // Create Incomes
             foreach ($request->incomes as $income) {
-                Income::create(array_merge(
-                    $income,
-                    ['user_id' => $user->id]
-                ));
+                Income::create([
+                    ...$income,
+                    'user_id' => $request->user()->id
+                ]);
             }
 
             // Create Expenses
             foreach ($request->expenses as $expense) {
-                Expense::create(array_merge(
-                    $expense,
-                    ['user_id' => $user->id]
-                ));
+                Expense::create([
+                    ...$expense,
+                    'user_id' => $request->user()->id
+                ]);
             }
 
-            // Create Loans if any
-            if ($request->has('loans')) {
+            // Create Loans
+            if ($request->loans) {
                 foreach ($request->loans as $loan) {
-                    Loan::create(array_merge(
-                        $loan,
-                        ['user_id' => $user->id]
-                    ));
+                    Loan::create([
+                        ...$loan,
+                        'user_id' => $request->user()->id
+                    ]);
                 }
             }
 
-            // Create Investments if any
-            if ($request->has('investments')) {
+            // Create Investments
+            if ($request->investments) {
                 foreach ($request->investments as $investment) {
-                    Investment::create(array_merge(
-                        $investment,
-                        ['user_id' => $user->id]
-                    ));
+                    Investment::create([
+                        ...$investment,
+                        'user_id' => $request->user()->id
+                    ]);
                 }
             }
 
             // Update user onboarding status
-            $user->update(['is_onboard' => true]);
+            $request->user()->update(['is_onboard' => true]);
 
             DB::commit();
 
             return response()->json([
                 'status' => true,
-                'message' => 'Profile created successfully',
-                'data' => [
-                    'profile' => $profile,
-                    'user' => $user
-                ]
+                'message' => 'Profile created successfully'
             ], 201);
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            DB::rollback();
             return response()->json([
                 'status' => false,
                 'message' => 'Profile creation failed',
