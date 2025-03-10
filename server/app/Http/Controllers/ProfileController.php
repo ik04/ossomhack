@@ -48,7 +48,7 @@ class ProfileController extends Controller
                 'investments' => 'present|array',
                 'investments.*.principal' => 'required|numeric',
                 'investments.*.rate_of_interest' => 'required|numeric',
-                'investments.*.compounding_frequency' => 'required|integer|min:0|max:3',
+                'investments.*.compounding_frequency' => 'required|integer|min:0',
                 'investments.*.time' => 'required|numeric',
                 'investments.*.type' => 'required|string'
             ]);

@@ -162,7 +162,7 @@ class GoalController extends Controller
                 'status' => true,
                 'goal' => [
                     'id' => $goal->id,
-                    'name' => $goal->name,
+                    'name' => $goal->title,
                     'amount' => $goal->amount,
                     'mode' => $goal->mode,
                     'is_achieved' => $goal->is_achieved,
@@ -175,6 +175,65 @@ class GoalController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to fetch goal details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function joinGoal(Request $request, $goalId)
+    {
+        try {
+            $goal = Goal::findOrFail($goalId);
+            
+            // Check if user is already a member
+            $existingMember = GoalMember::where('goal_id', $goalId)
+                ->where('user_id', $request->user()->id)
+                ->exists();
+                
+            if ($existingMember) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You are already a member of this goal'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            GoalMember::create([
+                'goal_id' => $goalId,
+                'user_id' => $request->user()->id
+            ]);
+
+            DB::commit();
+
+            // Fetch updated goal with members
+            $goal = Goal::with('members.user')->findOrFail($goalId);
+            
+            // Calculate portions
+            $goalService = new GoalService(new Goal());
+            $portions = $goal->mode === GoalMode::EQUAL->value 
+                ? $goalService->goalEqualModePortion($goalId)
+                : $goalService->goalSalaryModePortion($goalId);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Successfully joined goal',
+                'goal' => [
+                    'id' => $goal->id,
+                    'name' => $goal->name,
+                    'amount' => $goal->amount,
+                    'mode' => $goal->mode,
+                    'is_achieved' => $goal->is_achieved,
+                    'created_at' => $goal->created_at,
+                    'portions' => $portions
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to join goal',
                 'error' => $e->getMessage()
             ], 500);
         }

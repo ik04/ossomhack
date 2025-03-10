@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/goals/{id}', [GoalController::class, 'fetchGoal']);
     Route::put('/goals/{goal}', [GoalController::class, 'update']);
     Route::delete('/goals/{goal}', [GoalController::class, 'destroy']);
+    Route::post('/goals/{id}/join', [GoalController::class, 'joinGoal']);
 
     // Income Routes
     Route::get('/incomes', [IncomeController::class, 'index']);

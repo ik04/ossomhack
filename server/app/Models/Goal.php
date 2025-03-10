@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Goal extends Model
 {
     protected $fillable = [
-        "name",
+        "title",
         "amount",
         "mode",
         "is_achieved"

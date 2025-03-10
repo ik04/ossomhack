@@ -192,7 +192,7 @@ class GoalService
 
         return [
             'goal_amount' => $goal->amount,
-            'goal_name' => $goal->name,
+            'goal_name' => $goal->title,
             'total_contributors' => count($memberSalaries),
             'total_salary_pool' => $totalSalaryPool,
             'contributions' => $contributions
