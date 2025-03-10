@@ -65,7 +65,7 @@ export default function Index() {
             manage finances, and boost financial literacy, all in one place."
           </p>
           <Link
-            to={"/profile"}
+            to={"/login"}
             className="bg-secondary flex justify-center items-center w-[242px] h-[81px] rounded-[16px] text-[30px] text-background font-sentient font-medium mt-14"
           >
             Get Started

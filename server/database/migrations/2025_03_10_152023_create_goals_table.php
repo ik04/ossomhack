@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GoalMode;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,15 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('loans', function (Blueprint $table) {
+        Schema::create('goals', function (Blueprint $table) {
             $table->id();
+            $table->string("title");
             $table->float("amount");
-            $table->float("name");
-            $table->float("monthly_emi");
-            $table->integer("tenure_left"); // * in months
-            $table->boolean("is_paid"); // * in months
-            $table->unsignedBigInteger("user_id");
-            $table->foreign("user_id")->references("id")->on('users')->onDelete("cascade");
+            $table->tinyInteger("mode")->default(GoalMode::SINGLE->value);
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('loans');
+        Schema::dropIfExists('goals');
     }
 };

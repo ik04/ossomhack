@@ -21,16 +21,37 @@ type ExpenseData = {
 };
 
 type LoanData = {
-  principal: number;
-  rate_of_interest: number;
-  tenure: number;
+  name: string;
+  amount: number;
+  monthly_emi: number;
+  tenure_left: number;
+  is_paid: boolean;
 };
+
+enum CompoundingFrequency {
+  ANNUALLY = 1,
+  SEMI_ANNUALLY = 2,
+  QUARTERLY = 4,
+  MONTHLY = 12,
+  DAILY = 365,
+}
+
+// Add investment types
+const INVESTMENT_TYPES = [
+  "Fixed Deposit",
+  "Mutual Fund",
+  "Stocks",
+  "Bonds",
+  "Real Estate",
+  "Others",
+] as const;
 
 type InvestmentData = {
   principal: number;
   rate_of_interest: number;
-  number_of_times: number;
+  compounding_frequency: number;
   time: number;
+  type: string;
 };
 
 export default function Onboarding() {
@@ -76,7 +97,7 @@ export default function Onboarding() {
       );
 
       if (data.status) {
-        navigate("/profile");
+        navigate("/dashbopard");
       } else {
         setError(data.message || "Submission failed");
       }
@@ -197,9 +218,9 @@ export default function Onboarding() {
                     }}
                   >
                     <option value={0}>Salary</option>
-                    <option value={1}>Investment</option>
+                    <option value={1}>Passive Income</option>
                     <option value={2}>Business</option>
-                    <option value={3}>Other</option>
+                    <option value={3}>Withdraw</option>
                   </select>
                 </div>
                 {incomes.length > 1 && (
@@ -276,10 +297,9 @@ export default function Onboarding() {
                       setExpenses(newExpenses);
                     }}
                   >
-                    <option value={0}>Housing</option>
-                    <option value={1}>Food</option>
-                    <option value={2}>Transportation</option>
-                    <option value={3}>Other</option>
+                    <option value={0}>Daily</option>
+                    <option value={1}>Weekly</option>
+                    <option value={2}>Monthly</option>
                   </select>
                 </div>
                 {expenses.length > 1 && (
@@ -315,51 +335,83 @@ export default function Onboarding() {
               <div key={index} className="space-y-4 p-4 border rounded-md">
                 <div>
                   <label className="block text-sm font-medium text-primary">
-                    Principal
+                    Loan Name
                   </label>
                   <input
-                    type="number"
+                    type="text"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={loan.principal}
+                    value={loan.name}
                     onChange={(e) => {
                       const newLoans = [...loans];
-                      newLoans[index].principal = parseFloat(e.target.value);
+                      newLoans[index].name = e.target.value;
                       setLoans(newLoans);
                     }}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-primary">
-                    Rate of Interest (%)
+                    Amount
                   </label>
                   <input
                     type="number"
-                    step="0.01"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={loan.rate_of_interest}
+                    value={loan.amount}
                     onChange={(e) => {
                       const newLoans = [...loans];
-                      newLoans[index].rate_of_interest = parseFloat(
-                        e.target.value
-                      );
+                      newLoans[index].amount = parseFloat(e.target.value);
                       setLoans(newLoans);
                     }}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-primary">
-                    Tenure (months)
+                    Monthly EMI
                   </label>
                   <input
                     type="number"
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={loan.tenure}
+                    value={loan.monthly_emi}
                     onChange={(e) => {
                       const newLoans = [...loans];
-                      newLoans[index].tenure = parseInt(e.target.value);
+                      newLoans[index].monthly_emi = parseFloat(e.target.value);
                       setLoans(newLoans);
                     }}
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary">
+                    Tenure Left (months)
+                  </label>
+                  <input
+                    type="number"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    value={loan.tenure_left}
+                    onChange={(e) => {
+                      const newLoans = [...loans];
+                      newLoans[index].tenure_left = parseInt(e.target.value);
+                      setLoans(newLoans);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary">
+                    Loan Status
+                  </label>
+                  <div className="mt-1">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="rounded border-gray-300 text-primary shadow-sm"
+                        checked={loan.is_paid}
+                        onChange={(e) => {
+                          const newLoans = [...loans];
+                          newLoans[index].is_paid = e.target.checked;
+                          setLoans(newLoans);
+                        }}
+                      />
+                      <span className="ml-2">Paid</span>
+                    </label>
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -375,7 +427,13 @@ export default function Onboarding() {
               onClick={() =>
                 setLoans([
                   ...loans,
-                  { principal: 0, rate_of_interest: 0, tenure: 0 },
+                  {
+                    name: "",
+                    amount: 0,
+                    monthly_emi: 0,
+                    tenure_left: 0,
+                    is_paid: false,
+                  },
                 ])
               }
               className="text-secondary"
@@ -430,18 +488,31 @@ export default function Onboarding() {
                   <label className="block text-sm font-medium text-primary">
                     Compounding Frequency
                   </label>
-                  <input
-                    type="number"
+                  <select
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={investment.number_of_times}
+                    value={investment.compounding_frequency}
                     onChange={(e) => {
                       const newInvestments = [...investments];
-                      newInvestments[index].number_of_times = parseInt(
+                      newInvestments[index].compounding_frequency = parseInt(
                         e.target.value
                       );
                       setInvestments(newInvestments);
                     }}
-                  />
+                  >
+                    <option value={CompoundingFrequency.ANNUALLY}>
+                      Annually
+                    </option>
+                    <option value={CompoundingFrequency.SEMI_ANNUALLY}>
+                      Semi-Annually
+                    </option>
+                    <option value={CompoundingFrequency.QUARTERLY}>
+                      Quarterly
+                    </option>
+                    <option value={CompoundingFrequency.MONTHLY}>
+                      Monthly
+                    </option>
+                    <option value={CompoundingFrequency.DAILY}>Daily</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-primary">
@@ -457,6 +528,27 @@ export default function Onboarding() {
                       setInvestments(newInvestments);
                     }}
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-primary">
+                    Investment Type
+                  </label>
+                  <select
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    value={investment.type}
+                    onChange={(e) => {
+                      const newInvestments = [...investments];
+                      newInvestments[index].type = e.target.value;
+                      setInvestments(newInvestments);
+                    }}
+                  >
+                    <option value="">Select type</option>
+                    {INVESTMENT_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <button
                   type="button"
@@ -477,8 +569,9 @@ export default function Onboarding() {
                   {
                     principal: 0,
                     rate_of_interest: 0,
-                    number_of_times: 12,
+                    compounding_frequency: 0,
                     time: 0,
+                    type: "",
                   },
                 ])
               }

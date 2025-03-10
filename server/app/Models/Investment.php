@@ -9,8 +9,9 @@ class Investment extends Model
     protected $fillable = [
         "principal",
         "rate_of_interest",
-        "number_of_times",
+        "compounding_frequency",
         "time",
-        "user_id"
+        "user_id",
+        "type"
     ];
 }

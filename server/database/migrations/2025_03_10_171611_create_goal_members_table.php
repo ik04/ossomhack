@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\CompoundingFrequency;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('investments', function (Blueprint $table) {
+        Schema::create('goal_members', function (Blueprint $table) {
             $table->id();
-            $table->float("principal");
-            $table->float("rate_of_interest");
-            $table->tinyInteger("compounding_frequency")->default(CompoundingFrequency::ANNUALLY->value);
-            $table->float("time"); // * in years
-            $table->unsignedBigInteger("user_id");
             $table->foreign("user_id")->references("id")->on('users')->onDelete("cascade");
-            $table->string("type");
+            $table->foreign("goal_id")->references("id")->on('goals')->onDelete("cascade");
+            $table->unsignedBigInteger("user_id");
+            $table->unsignedBigInteger("goal_id");
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('investments');
+        Schema::dropIfExists('goal_members');
     }
 };
