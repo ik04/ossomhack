@@ -16,7 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string("title");
             $table->float("amount");
-            $table->tinyInteger("mode")->default(GoalMode::SINGLE->value);
+            $table->tinyInteger("mode")->default(GoalMode::EQUAL->value);
+            $table->boolean("is_achieved")->default(false);
             $table->timestamps();
         });
     }

@@ -97,7 +97,7 @@ export default function Onboarding() {
       );
 
       if (data.status) {
-        navigate("/dashbopard");
+        navigate("/dashboard");
       } else {
         setError(data.message || "Submission failed");
       }
