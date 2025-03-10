@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GoalMode;
 use App\Models\Goal;
 use App\Models\GoalMember;
+use App\Services\GoalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -146,8 +148,35 @@ class GoalController extends Controller
         }
     }
 
-    public function fetchGoal(Request $request, $id){
-        
+    public function fetchGoal(Request $request, $id)
+    {
+        try {
+            $goal = Goal::with(['members.user'])->findOrFail($id);
+            $goalService = new GoalService($goal);
 
+            $portionDetails = $goal->mode === GoalMode::EQUAL 
+                ? $goalService->goalEqualModePortion($id)
+                : $goalService->goalSalaryModePortion($id);
+
+            return response()->json([
+                'status' => true,
+                'goal' => [
+                    'id' => $goal->id,
+                    'name' => $goal->name,
+                    'amount' => $goal->amount,
+                    'mode' => $goal->mode,
+                    'is_achieved' => $goal->is_achieved,
+                    'created_at' => $goal->created_at
+                ],
+                'portions' => $portionDetails
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch goal details',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

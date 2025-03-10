@@ -31,16 +31,16 @@ class GoalService
 
         foreach ($incomes as $income) {
             switch ($income->type) {
-                case IncomeType::SALARY->value:
+                case IncomeType::SALARY:
                     $breakdown['salary'] += $income->amount;
                     break;
-                case IncomeType::SIDEHUSTLE->value:
+                case IncomeType::SIDEHUSTLE:
                     $breakdown['sidehustle'] += $income->amount;
                     break;
-                case IncomeType::BUSINESS->value:
+                case IncomeType::BUSINESS:
                     $breakdown['business'] += $income->amount;
                     break;
-                case IncomeType::WITHDRAW->value:
+                case IncomeType::WITHDRAW:
                     $breakdown['withdraw'] += $income->amount;
                     break;
             }
@@ -64,13 +64,13 @@ class GoalService
 
         foreach ($expenses as $expense) {
             switch ($expense->type) {
-                case ExpenseType::DAILY->value:
+                case ExpenseType::DAILY:
                     $breakdown['daily'] += $expense->amount;
                     break;
-                case ExpenseType::WEEKLY->value:
+                case ExpenseType::WEEKLY:
                     $breakdown['weekly'] += $expense->amount;
                     break;
-                case ExpenseType::MONTHLY->value:
+                case ExpenseType::MONTHLY:
                     $breakdown['monthly'] += $expense->amount;
                     break;
             }
@@ -149,10 +149,10 @@ class GoalService
 
     public function goalSalaryModePortion(int $goalId): array
     {
-        $goal = Goal::with('members')->findOrFail($goalId);
+        $goal = Goal::with(['members.user'])->findOrFail($goalId);
         $members = $goal->members;
         
-        if ($members->count() === 0) {
+        if ($members->isEmpty()) {
             throw new \Exception('Goal must have at least one member');
         }
 
@@ -164,19 +164,27 @@ class GoalService
                 ->where('type', IncomeType::SALARY)
                 ->sum('amount');
                 
-            $memberSalaries[$member->user_id] = $salary;
-            $totalSalaryPool += $salary;
+            if ($salary > 0) {
+                $memberSalaries[$member->user_id] = [
+                    'user_id' => $member->user_id,
+                    'name' => $member->user->name,
+                    'salary' => $salary
+                ];
+                $totalSalaryPool += $salary;
+            }
         }
 
-        if ($totalSalaryPool === 0) {
+        if (empty($memberSalaries)) {
             throw new \Exception('No salary income found for any member');
         }
 
         $contributions = [];
-        foreach ($memberSalaries as $userId => $salary) {
-            $proportion = $salary / $totalSalaryPool;
+        foreach ($memberSalaries as $userId => $memberData) {
+            $proportion = $memberData['salary'] / $totalSalaryPool;
             $contributions[$userId] = [
                 'user_id' => $userId,
+                'name' => $memberData['name'],
+                'salary' => $memberData['salary'],
                 'amount' => $goal->amount * $proportion,
                 'proportion' => $proportion
             ];
@@ -184,7 +192,9 @@ class GoalService
 
         return [
             'goal_amount' => $goal->amount,
-            'total_contributors' => $members->count(),
+            'goal_name' => $goal->name,
+            'total_contributors' => count($memberSalaries),
+            'total_salary_pool' => $totalSalaryPool,
             'contributions' => $contributions
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Goal extends Model
 {
@@ -12,4 +13,9 @@ class Goal extends Model
         "mode",
         "is_achieved"
     ];
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(GoalMember::class);
+    }
 }
