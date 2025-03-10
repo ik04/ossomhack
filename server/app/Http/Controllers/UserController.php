@@ -36,14 +36,22 @@ class UserController extends Controller
                 'password' => Hash::make($request->password)
             ]);
     
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('token')->plainTextToken;
     
             return response()->json([
                 'status' => true,
                 'message' => 'User registered successfully',
-                'token' => $token,
+                "token" => $token,
                 'user' => $user
-            ], 201);
+            ], 201)->cookie(
+                'token',
+                $token,
+                60 * 24 * 30, // 30 days
+                '/',
+                null,
+                true,
+                true // httpOnly
+            );
     
         } catch (Exception $e) {
             return response()->json([
@@ -76,14 +84,22 @@ class UserController extends Controller
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('token')->plainTextToken;
 
         return response()->json([
             'status' => true,
             'message' => 'Login successful',
-            'token' => $token,
-            'user' => $user
-        ], 200);
+            'user' => $user,
+            "token" => $token
+        ], 200)->cookie(
+            'token',
+            $token,
+            60 * 24 * 30,
+            '/',
+            null,
+            true,
+            true
+        );
     }
 
     public function user(Request $request)
@@ -101,6 +117,10 @@ class UserController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Successfully logged out'
-        ]);
+        ])->cookie(
+            'token',
+            null,
+            -1
+        );
     }
 }
