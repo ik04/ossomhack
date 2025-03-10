@@ -2,11 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
+@layer base {
+  @font-face {
+    font-family: Sentient;
+    font-weight: 300;
+    src: url(/fonts/Sentient_Complete/Fonts/OTF/Sentient-Light.otf)
+      format("otf");
+  }
+  @font-face {
+    font-family: Sentient;
+    font-weight: 400;
+    src: url(/fonts/Sentient_Complete/Fonts/OTF/Sentient-Regular.otf)
+      format("otf");
+  }
+  @font-face {
+    font-family: Sentient;
+    font-weight: 500;
+    src: url(/fonts/Sentient_Complete/Fonts/OTF/Sentient-Medium.otf)
+      format("otf");
+  }
+  @font-face {
+    font-family: Sentient;
+    font-weight: 600;
+    src: url(/fonts/Sentient_Complete/Fonts/OTF/Sentient-Bold.otf) format("otf");
   }
 }

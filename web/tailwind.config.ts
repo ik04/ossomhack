@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         sans: [
+          "Sentient",
           "Inter",
           "ui-sans-serif",
           "system-ui",
@@ -15,6 +16,12 @@ export default {
           "Segoe UI Symbol",
           "Noto Color Emoji",
         ],
+        sentient: ["Sentient", "serif"],
+      },
+      colors: {
+        background: "#DCD7C9",
+        primary: "#2C3930",
+        secondary: "#A27B5C",
       },
     },
   },
