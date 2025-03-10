@@ -64,9 +64,12 @@ export default function Index() {
             "Save smarter and grow together with Pennywise—track group savings,
             manage finances, and boost financial literacy, all in one place."
           </p>
-          <button className="bg-secondary w-[242px] h-[81px] rounded-[16px] text-[30px] text-background font-sentient font-medium mt-14">
+          <Link
+            to={"/profile"}
+            className="bg-secondary flex justify-center items-center w-[242px] h-[81px] rounded-[16px] text-[30px] text-background font-sentient font-medium mt-14"
+          >
             Get Started
-          </button>
+          </Link>
         </div>
       </div>
     </div>

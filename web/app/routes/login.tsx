@@ -30,7 +30,8 @@ export default function Login() {
       );
 
       if (data.status) {
-        navigate("/dashboard");
+        navigate("/profile");
+        // navigate("/dashboard");
       } else {
         setError(data.message || "Login failed");
       }

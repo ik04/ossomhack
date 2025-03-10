@@ -10,7 +10,8 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && !user.is_onboard) {
+    console.log("User state:", user);
+    if (user && !(user.is_onboard == 1)) {
       navigate("/onboarding");
     }
   }, [user]);
@@ -22,9 +23,12 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
           withCredentials: true,
         });
 
-        if (data.status) {
+        if (data) {
           setUser(data.user);
           setIsAuthenticated(true);
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${data.access_token}`;
         }
       } catch (error) {
         setUser(null);

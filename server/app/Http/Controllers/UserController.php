@@ -104,10 +104,28 @@ class UserController extends Controller
 
     public function user(Request $request)
     {
-        return response()->json([
-            'status' => true,
-            'user' => $request->user()
-        ]);
+        if(!$request->hasCookie("token")){
+            return response()->json([
+                'error' => "Unauthenticated"
+            ],401);
+        }
+        if($token = \Laravel\Sanctum\PersonalAccessToken::findToken($request->cookie("token"))){
+            $user = $token->tokenable;
+        }
+        else{
+            return response()->json([
+                'error' => "unauthenticated"
+            ],401);
+        }
+        if(is_null($user)){
+            return response()->json([
+                'error' => "Unauthenticated"
+            ],401);
+        }
+        return response() -> json([
+            "user" => $user,
+            'access_token' => $request -> cookie('token'),
+        ],200);
     }
 
     public function logout(Request $request)
