@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('username');
             $table->string('email')->unique();
             $table->string('password');
+            $table->boolean("is_onboard")->default(false);
             $table->timestamps();
         });
         Schema::create('sessions', function (Blueprint $table) {
