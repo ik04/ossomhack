@@ -51,7 +51,24 @@ export default function Index() {
   return (
     <div className="bg-background h-screen">
       <Navbar />
-      <div className="landing"></div>
+      <div className="landing flex justify-center items-center h-[80vh]">
+        <div className="flex flex-col items-center">
+          <h1 className="text-primary font-sentient font-medium text-[118px]">
+            Watch the <span className="font-semibold">Pennies!</span>
+          </h1>
+          <p className="text-primary font-sentient text-[60px] -mt-10">
+            & the <span className="font-semibold">dollars</span> take care of{" "}
+            <span className="font-semibold">themselves</span>
+          </p>
+          <p className="font-sentient text-primary text-2xl w-[900px] text-center font-light mt-3">
+            "Save smarter and grow together with Pennywise—track group savings,
+            manage finances, and boost financial literacy, all in one place."
+          </p>
+          <button className="bg-secondary w-[242px] h-[81px] rounded-[16px] text-[30px] text-background font-sentient font-medium mt-14">
+            Get Started
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
