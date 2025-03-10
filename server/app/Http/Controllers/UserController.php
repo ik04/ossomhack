@@ -16,6 +16,7 @@ class UserController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'username' => 'required|string|max:255',
+                'full_name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string'
             ]);
@@ -30,6 +31,7 @@ class UserController extends Controller
             
             $user = User::create([
                 'username' => $request->username,  // Changed from $request->name
+                'full_name' => $request->full_name,  
                 'email' => $request->email,
                 'password' => Hash::make($request->password)
             ]);

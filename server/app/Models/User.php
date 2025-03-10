@@ -17,7 +17,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        "is_onboard"
+        "is_onboard",
+        "full_name"
     ];
 
 }
