@@ -48,4 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/investments', [InvestmentController::class, 'store']);
     Route::put('/investments/{investment}', [InvestmentController::class, 'update']);
     Route::delete('/investments/{investment}', [InvestmentController::class, 'destroy']);
+
+    Route::get('/knowledge', [ProfileController::class, 'index']);
 });

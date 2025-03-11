@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use App\Models\Income;
 use App\Models\Expense;
+use App\Models\Goal;
 use App\Models\Loan;
 use App\Models\Investment;
 use App\Models\User;
+use App\Services\GoalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -120,6 +122,45 @@ class ProfileController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Profile creation failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $profile = Profile::where('user_id', $request->user()->id)->first();
+            $goalService = new GoalService(new Goal());
+
+            if (!$profile) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Profile not found'
+                ], 404);
+            }
+
+            $totalIncome = $goalService->calculateTotalIncome($request->user()->id);
+            $totalExpenses = $goalService->calculateTotalExpenses($request->user()->id);
+            $savings = $goalService->totalSavings($request->user()->id);
+
+            return response()->json([
+                'status' => true,
+                'data' => [
+                    'userid' => $request->user()->id,
+                    'location' => $profile->location,
+                    'occupation' => $profile->occupation,
+                    'age' => $profile->age,
+                    'income' => $totalIncome['total'],
+                    'expense' => $totalExpenses['monthly_total'],
+                    'savings' => $savings
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch profile',
                 'error' => $e->getMessage()
             ], 500);
         }

@@ -17,7 +17,7 @@ return new class extends Migration
             // * send income separately from the incomes table, fetch total income or just salary for the llm
             // $table->float("expense");
             // * send expense separately from the expenses table, fetch total expenses from the table and send to naman's model after onboarding
-            $table->string("location");
+            $table->string("location")->default("Chennai");
             $table->string("occupation");
             $table->integer("age");
             $table->unsignedBigInteger("user_id");
