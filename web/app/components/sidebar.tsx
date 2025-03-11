@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react";
 import React from "react";
 
 export const Sidebar = () => {
@@ -6,7 +7,7 @@ export const Sidebar = () => {
     { name: "Income", href: "/dashboard", icon: "/assets/money.svg" },
     { name: "Expense", href: "/expense", icon: "/assets/graph.svg" },
     { name: "Loans", href: "/loans", icon: "/assets/loans.svg" },
-    { name: "Statement", href: "/statement", icon: "/assets/statement.svg" },
+    { name: "Knowledge", href: "/knowledge", icon: "/assets/statement.svg" },
   ];
 
   return (
@@ -19,9 +20,9 @@ export const Sidebar = () => {
               key={index}
               className="group relative flex items-center justify-center my-4"
             >
-              <a href={link.href} className="flex items-center justify-center">
+              <Link to={link.href} className="flex items-center justify-center">
                 <img src={link.icon} alt={link.name} className="h-8 w-8" />
-              </a>
+              </Link>
               <span className="absolute left-full ml-2 px-2 py-1 bg-black text-white text-sm rounded opacity-0 group-hover:opacity-100 whitespace-nowrap">
                 {link.name}
               </span>

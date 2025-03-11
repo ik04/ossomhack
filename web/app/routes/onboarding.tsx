@@ -130,10 +130,35 @@ export default function Onboarding() {
                     setProfile({ ...profile, location: e.target.value })
                   }
                 >
-                  <option value="">Select location</option>
-                  <option value="urban">Urban</option>
-                  <option value="suburban">Suburban</option>
-                  <option value="rural">Rural</option>
+                  <option value="">Select city</option>
+                  <optgroup label="North India">
+                    <option value="delhi">Delhi</option>
+                    <option value="noida">Noida</option>
+                    <option value="gurgaon">Gurgaon</option>
+                    <option value="chandigarh">Chandigarh</option>
+                    <option value="lucknow">Lucknow</option>
+                  </optgroup>
+                  <optgroup label="South India">
+                    <option value="bangalore">Bangalore</option>
+                    <option value="hyderabad">Hyderabad</option>
+                    <option value="chennai">Chennai</option>
+                    <option value="kochi">Kochi</option>
+                    <option value="mysore">Mysore</option>
+                  </optgroup>
+                  <optgroup label="West India">
+                    <option value="mumbai">Mumbai</option>
+                    <option value="pune">Pune</option>
+                    <option value="ahmedabad">Ahmedabad</option>
+                    <option value="surat">Surat</option>
+                    <option value="nagpur">Nagpur</option>
+                  </optgroup>
+                  <optgroup label="East India">
+                    <option value="kolkata">Kolkata</option>
+                    <option value="bhubaneswar">Bhubaneswar</option>
+                    <option value="patna">Patna</option>
+                    <option value="guwahati">Guwahati</option>
+                    <option value="ranchi">Ranchi</option>
+                  </optgroup>
                 </select>
               </div>
               <div>
