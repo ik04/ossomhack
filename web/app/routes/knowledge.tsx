@@ -147,7 +147,7 @@ export default function Knowledge() {
                 Investment Tips
               </h3>
               {tipsLoading ? (
-                <div className="flex items-center justify-center h-[200px] font-sentient text-primary animate-ping">
+                <div className="flex items-center justify-center h-[200px] font-sentient text-2xl text-primary animate-pulse">
                   Loading....
                 </div>
               ) : (
